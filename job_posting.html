@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng Tin Tuyển Dụng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const JobPostingForm = () => {
+      const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        skills: '',
+        salary: '',
+        location: '',
+        postImmediately: false,
+      });
+      const [errors, setErrors] = useState({});
+      const [notification, setNotification] = useState('');
+
+      const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData((prev) => ({
+          ...prev,
+          [name]: type === 'checkbox' ? checked : value,
+        }));
+        setErrors((prev) => ({ ...prev, [name]: '' }));
+      };
+
+      const validateForm = () => {
+        const newErrors = {};
+        const { title, description, skills, salary, location } = formData;
+
+        if (!title) newErrors.title = 'Vui lòng điền tiêu đề';
+        if (!description) newErrors.description = 'Vui lòng điền mô tả công việc';
+        if (!skills) newErrors.skills = 'Vui lòng điền yêu cầu kỹ năng';
+        if (!salary) newErrors.salary = 'Vui lòng điền mức lương';
+        if (!location) newErrors.location = 'Vui lòng điền địa điểm làm việc';
+
+        if (salary && !/^[0-9-]+$/g.test(salary)) {
+          newErrors.salary = 'Mức lương chỉ được chứa số và dấu “-”';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!validateForm()) {
+          setNotification('Vui lòng điền đầy đủ thông tin');
+          return;
+        }
+
+        if (formData.postImmediately) {
+          // Giả lập đăng tin
+          setNotification(`Tin “${formData.title}” đã được đăng thành công`);
+          setTimeout(() => {
+            window.location.href = '/employer/jobs';
+          }, 2000);
+        } else {
+          // Giả lập lưu bản nháp
+          setNotification('Tin đã được lưu thành bản nháp');
+          setTimeout(() => {
+            window.location.href = '/employer/draft';
+          }, 2000);
+        }
+      };
+
+      const handleClose = () => {
+        if (!formData.postImmediately) {
+          // Giả lập lưu bản nháp tự động khi đóng
+          console.log('Bản nháp được lưu trong 7 ngày');
+        }
+        window.location.href = '/employer/jobs';
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl w-full space-y-8 bg-white p-10 rounded-lg shadow-md">
+            <div className="flex justify-between items-center">
+              <h2 className="text-3xl font-bold text-gray-900">Đăng Tin Tuyển Dụng</h2>
+              <button
+                onClick={handleClose}
+                className="text-gray-500 hover:text-gray-700 text-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            {notification && (
+              <div className="fixed top-4 right-4 bg-green-500 text-white p-4 rounded-md shadow-lg">
+                {notification}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Tiêu đề</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full rounded-md border ${errors.title ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  placeholder="Ví dụ: Lập trình viên Full-stack"
+                />
+                {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Mô tả công việc</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full rounded-md border ${errors.description ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  rows="4"
+                  placeholder="Mô tả chi tiết công việc"
+                />
+                {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Yêu cầu kỹ năng</label>
+                <input
+                  type="text"
+                  name="skills"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full rounded-md border ${errors.skills ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  placeholder="Ví dụ: JavaScript, React, Node.js"
+                />
+                {errors.skills && <p className="text-red-500 text-sm">{errors.skills}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Mức lương</label>
+                <input
+                  type="text"
+                  name="salary"
+                  value={formData.salary}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full rounded-md border ${errors.salary ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  placeholder="Ví dụ: 15-20"
+                />
+                {errors.salary && <p className="text-red-500 text-sm">{errors.salary}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Địa điểm làm việc</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full rounded-md border ${errors.location ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  placeholder="Ví dụ: Hà Nội"
+                />
+                {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="postImmediately"
+                  checked={formData.postImmediately}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label className="ml-2 block text-sm text-gray-900">Đăng tin ngay lập tức</label>
+              </div>
+
+              <div className="flex justify-between">
+                <a
+                  href="/employer/jobs"
+                  className="text-indigo-600 hover:text-indigo-800 text-sm"
+                >
+                  Quay lại danh sách tin
+                </a>
+                <a
+                  href="/employer/draft"
+                  className="text-indigo-600 hover:text-indigo-800 text-sm"
+                >
+                  Xem bản nháp
+                </a>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Đăng tin
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<JobPostingForm />, document.getElementById('root'));
+  </script>
+</body>
+</html>
