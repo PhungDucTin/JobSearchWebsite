@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tạo hồ sơ cá nhân</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .error { border-color: red; }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2>Tạo và lưu hồ sơ cá nhân</h2>
+
+    <form id="cvForm">
+      <div class="form-group">
+        <label for="education">Học vấn</label>
+        <textarea class="form-control" id="education" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="experience">Kinh nghiệm làm việc</label>
+        <textarea class="form-control" id="experience" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="skills">Kỹ năng</label>
+        <textarea class="form-control" id="skills" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="cvFile">Tải lên CV đính kèm (PDF, DOCX)</label>
+        <input type="file" class="form-control-file" id="cvFile" accept=".pdf,.doc,.docx" required>
+      </div>
+
+      <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="publicCV">
+        <label class="form-check-label" for="publicCV">Hiển thị công khai hồ sơ</label>
+      </div>
+
+      <button type="submit" class="btn btn-success">Lưu hồ sơ</button>
+      <a href="/profile" class="btn btn-secondary">Trở về trang hồ sơ</a>
+      <a href="/profile/preview" class="btn btn-info">Xem trước CV</a>
+    </form>
+
+    <div class="alert mt-3 d-none" id="messageBox"></div>
+  </div>
+
+  <script>
+    document.getElementById('cvForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const education = document.getElementById('education');
+      const experience = document.getElementById('experience');
+      const skills = document.getElementById('skills');
+      const fileInput = document.getElementById('cvFile');
+      const publicCV = document.getElementById('publicCV').checked;
+      const messageBox = document.getElementById('messageBox');
+
+      messageBox.classList.add('d-none');
+      [education, experience, skills].forEach(el => el.classList.remove('error'));
+
+      if (!education.value || !experience.value || !skills.value) {
+        [education, experience, skills].forEach(el => {
+          if (!el.value) el.classList.add('error');
+        });
+        messageBox.textContent = 'Vui lòng nhập đầy đủ thông tin học vấn, kinh nghiệm và kỹ năng';
+        messageBox.className = 'alert alert-danger';
+        messageBox.classList.remove('d-none');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      if (!file) {
+        messageBox.textContent = 'Vui lòng tải lên file CV đính kèm';
+        messageBox.className = 'alert alert-danger';
+        messageBox.classList.remove('d-none');
+        return;
+      }
+
+      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!validTypes.includes(file.type)) {
+        messageBox.textContent = 'Chỉ chấp nhận file PDF hoặc DOCX';
+        messageBox.className = 'alert alert-warning';
+        messageBox.classList.remove('d-none');
+        return;
+      }
+
+      messageBox.textContent = publicCV ? 'Hồ sơ đã được lưu và công khai cho nhà tuyển dụng' : 'Hồ sơ đã được lưu, hiện đang ở chế độ riêng tư';
+      messageBox.className = 'alert alert-success';
+      messageBox.classList.remove('d-none');
+    });
+  </script>
+</body>
+</html>
