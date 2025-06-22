@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý ứng viên</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .error { border-color: red; }
+    .auto-refresh {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h3>Danh sách ứng viên đã nộp hồ sơ</h3>
+
+    <div class="form-group">
+      <label for="jobSelect">Chọn tin tuyển dụng:</label>
+      <select class="form-control" id="jobSelect">
+        <option value="">-- Chọn tin tuyển dụng --</option>
+        <!-- Các option sẽ được thêm bằng JS -->
+      </select>
+    </div>
+
+    <div class="auto-refresh">
+      <input type="checkbox" id="autoRefresh" class="mr-2">
+      <label for="autoRefresh">Cập nhật tự động mỗi 5 phút</label>
+    </div>
+
+    <button class="btn btn-primary mb-3" onclick="loadCandidates()">Tải lại danh sách</button>
+
+    <div id="message" class="alert d-none"></div>
+
+    <table class="table table-bordered d-none" id="candidateTable">
+      <thead>
+        <tr>
+          <th>Tên</th>
+          <th>Email</th>
+          <th>Thời gian nộp</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <a href="/employer/export" class="btn btn-success">Xuất danh sách</a>
+  </div>
+
+  <script>
+    const jobSelect = document.getElementById('jobSelect');
+    const message = document.getElementById('message');
+    const table = document.getElementById('candidateTable');
+    const tbody = table.querySelector('tbody');
+
+    const loadJobOptions = () => {
+      // Giả lập fetch danh sách job
+      const jobs = [
+        { id: 1, title: 'Lập trình viên Frontend' },
+        { id: 2, title: 'Tester phần mềm' }
+      ];
+      jobs.forEach(job => {
+        const opt = document.createElement('option');
+        opt.value = job.id;
+        opt.textContent = job.title;
+        jobSelect.appendChild(opt);
+      });
+    };
+
+    const loadCandidates = () => {
+      const jobId = jobSelect.value;
+      message.classList.add('d-none');
+      jobSelect.classList.remove('error');
+      table.classList.add('d-none');
+      tbody.innerHTML = '';
+
+      if (!jobId) {
+        message.textContent = 'Vui lòng chọn tin tuyển dụng';
+        message.className = 'alert alert-danger';
+        message.classList.remove('d-none');
+        jobSelect.classList.add('error');
+        return;
+      }
+
+      // Giả lập fetch ứng viên
+      const candidates = jobId == 1 ? [
+        { id: 101, name: 'Nguyễn Văn A', email: 'a@gmail.com', time: '2025-06-20 14:30' },
+        { id: 102, name: 'Trần Thị B', email: 'b@gmail.com', time: '2025-06-21 09:15' }
+      ] : [];
+
+      if (candidates.length === 0) {
+        message.textContent = 'Chưa có ứng viên nào nộp hồ sơ';
+        message.className = 'alert alert-warning';
+        message.classList.remove('d-none');
+        return;
+      }
+
+      candidates.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.name}</td>
+          <td>${c.email}</td>
+          <td>${c.time}</td>
+          <td><a href="/employer/candidate/${c.id}" class="btn btn-info btn-sm">Chi tiết</a></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      table.classList.remove('d-none');
+
+      if (document.getElementById('autoRefresh').checked) {
+        localStorage.setItem('autoRefreshEnabled', 'true');
+        localStorage.setItem('selectedJobId', jobId);
+        localStorage.setItem('lastSaved', Date.now().toString());
+      } else {
+        localStorage.removeItem('autoRefreshEnabled');
+        localStorage.removeItem('selectedJobId');
+        localStorage.removeItem('lastSaved');
+      }
+    };
+
+    const checkAutoRefresh = () => {
+      const enabled = localStorage.getItem('autoRefreshEnabled') === 'true';
+      const savedTime = parseInt(localStorage.getItem('lastSaved') || 0);
+      if (enabled && (Date.now() - savedTime < 7 * 24 * 60 * 60 * 1000)) {
+        document.getElementById('autoRefresh').checked = true;
+        const savedJobId = localStorage.getItem('selectedJobId');
+        if (savedJobId) {
+          jobSelect.value = savedJobId;
+          loadCandidates();
+        }
+        setInterval(() => loadCandidates(), 5 * 60 * 1000);
+      }
+    };
+
+    window.onload = () => {
+      loadJobOptions();
+      checkAutoRefresh();
+    };
+  </script>
+</body>
+
+</html>
