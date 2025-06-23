@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý tin tuyển dụng</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    select, input[type="text"], button { padding: 6px; margin: 5px; }
+    .actions button { margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Quản lý tin tuyển dụng</h2>
+
+  <!-- Bộ lọc và tìm kiếm -->
+  <label for="status-filter">Trạng thái:</label>
+  <select id="status-filter">
+    <option value="all">Tất cả</option>
+    <option value="pending">Chờ duyệt</option>
+    <option value="approved">Đã duyệt</option>
+    <option value="hidden">Bị ẩn</option>
+  </select>
+
+  <input type="text" id="search-title" placeholder="Tìm theo tiêu đề">
+  <button onclick="refreshJobs()">Làm mới danh sách</button>
+
+  <!-- Bảng danh sách tin -->
+  <table>
+    <thead>
+      <tr>
+        <th>Tiêu đề</th>
+        <th>Nhà tuyển dụng</th>
+        <th>Ngày đăng</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="job-table">
+      <tr>
+        <td>Kế toán tổng hợp</td>
+        <td>Công ty ABC</td>
+        <td>2025-06-20</td>
+        <td>Chờ duyệt</td>
+        <td class="actions">
+          <button onclick="viewJob(1)">Xem</button>
+          <button onclick="approveJob(this)">Duyệt</button>
+          <button onclick="hideJob(this)">Ẩn</button>
+        </td>
+      </tr>
+      <!-- Thêm các dòng khác bằng JS nếu cần -->
+    </tbody>
+  </table>
+
+  <script>
+    function refreshJobs() {
+      alert("Đã làm mới danh sách tin tuyển dụng.");
+    }
+
+    function viewJob(id) {
+      window.location.href = "/admin/job-detail/" + id;
+    }
+
+    function approveJob(button) {
+      const row = button.closest("tr");
+      row.cells[3].innerText = "Đã duyệt";
+      alert("Tin đã được duyệt.");
+    }
+
+    function hideJob(button) {
+      const row = button.closest("tr");
+      row.cells[3].innerText = "Bị ẩn";
+      alert("Tin đã được ẩn khỏi hệ thống.");
+    }
+  </script>
+</body>
+</html>
