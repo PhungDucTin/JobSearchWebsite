@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        select, input[type="text"], button {
+            padding: 6px;
+            margin: 5px;
+        }
+
+        .actions button {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Quản lý tài khoản người dùng</h2>
+
+    <!-- Bộ lọc và tìm kiếm -->
+    <label for="user-type">Loại người dùng:</label>
+    <select id="user-type">
+        <option value="all">Tất cả</option>
+        <option value="candidate">Ứng viên</option>
+        <option value="employer">Nhà tuyển dụng</option>
+    </select>
+
+    <input type="text" id="search" placeholder="Tìm theo tên hoặc username">
+    <button onclick="refreshList()">Làm mới danh sách</button>
+
+    <!-- Bảng danh sách người dùng -->
+    <table>
+        <thead>
+            <tr>
+                <th>Họ tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Vai trò</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="user-table">
+            <tr>
+                <td>Nguyễn Văn A</td>
+                <td>nva123</td>
+                <td>Ứng viên</td>
+                <td>Đang hoạt động</td>
+                <td class="actions">
+                    <button onclick="openRolePopup()">Phân quyền</button>
+                    <button onclick="lockAccount()">Khóa</button>
+                </td>
+            </tr>
+            <!-- Dữ liệu mẫu, có thể thay đổi bằng JS -->
+        </tbody>
+    </table>
+
+    <!-- Popup phân quyền -->
+    <div id="role-popup" style="display:none; position:fixed; top:30%; left:35%; background:white; border:1px solid #ccc; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.2)">
+        <h3>Phân quyền người dùng</h3>
+        <label>Chọn vai trò:</label>
+        <select id="new-role">
+            <option value="admin">Admin phụ</option>
+            <option value="employer">Nhà tuyển dụng</option>
+            <option value="candidate">Ứng viên</option>
+        </select>
+        <br><br>
+        <button onclick="confirmRole()">Xác nhận</button>
+        <button onclick="closePopup()">Hủy</button>
+    </div>
+
+    <script>
+        function refreshList() {
+            alert("Đã làm mới danh sách người dùng.");
+        }
+
+        function openRolePopup() {
+            document.getElementById('role-popup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('role-popup').style.display = 'none';
+        }
+
+        function confirmRole() {
+            const newRole = document.getElementById('new-role').value;
+            closePopup();
+            alert("Cập nhật vai trò thành công: " + newRole);
+        }
+
+        function lockAccount() {
+            if (confirm("Bạn có chắc muốn khóa tài khoản này?")) {
+                alert("Tài khoản đã bị khóa.");
+            }
+        }
+    </script>
+</body>
+</html>
